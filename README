@@ -1,0 +1,43 @@
+= Description = 
+
+A lightweight multithreading twitter bot framework written in Python, with plugin support
+
+= License =
+
+GPL v.2.0
+
+= Requirements =
+
+Tested with python-2.7
+
+oauthtwitter (modified version included)
+simplejson (available through easy_install)
+oauth2 (available through easy_install)
+
+= Installation =
+
+To set up the bot with the twitter account of your choosing,
+be logged on to it on twitter web, and run the access_token_generator.py script.
+
+To run the bot, run the run.py script or do something like:
+
+from pytwitbot import TwitterBot
+
+t = TwitterBot()
+t.runBot()
+
+in one of your own scripts.
+
+= Plugins =
+
+To make a new plugin, simply look at the sample plugins included in the plugins.py file and duplicate.
+Put your code within the run-function of the class. If you find a better way to do the plugin system, let me know
+
+To install a plugin (make it run when starting the bot), simply make a variable of the class
+and add it to the plugins array at the bottom of plugins.py. Again, not very elegant, so if you have a better system,
+let me know.
+
+= Contact =
+
+If you have any issues with the code or questions or whatever, you can contact me on the project page,
+http://github.com/martingamm/pytwitbot or on my twitter, @martingamm
