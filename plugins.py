@@ -11,8 +11,44 @@ from oauthtwitter import OAuthApi
 import time
 import threading
 
-# UptimeTweeter-specific import
+# UptimeTweeter-specific imports
 from commands import getoutput
+
+# XMLTweeter-specific imports
+from BeautifulSoup import BeautifulStoneSoup
+import urllib2
+
+class XMLTweeter(threading.Thread):
+    '''
+    Author: Martin Gammelsæter (@martingamm)
+    Description: Tweets title and link of a XMLfeed, in this example the mac1.no feed
+    
+    Non-library modules: BeautifulSoup
+    '''
+    def __init__(self, twitter):
+        threading.Thread.__init__(self)
+        self.twitter = twitter
+    
+    def run(self):
+        title = ''
+        while True:
+            url = 'http://mac1.no/node/feed'
+            feed = urllib2.urlopen(url)
+            soup = BeautifulStoneSoup(feed, fromEncoding='utf-8')
+            titles = soup.findAll('title')
+            links = soup.findAll('link')
+            title = titles[1].contents[0].string
+            link = links[1].contents[0].string
+            status = str(title) + ' ' + str(link)
+            #FIXME don't ruin twitter
+            try:
+                self.twitter.UpdateStatus(status)
+                print '[*] Tweeted the post: ' + title
+            except:
+                pass
+            
+            # Sleeps for 5 minutes
+            time.sleep(float(300))
 
 class UptimeTweeter(threading.Thread):
     '''
@@ -32,6 +68,7 @@ class UptimeTweeter(threading.Thread):
             except:
                 print '[*] Unable to tweet uptime...'
             
+            # Sleeps for an hour...
             time.sleep(float(3600))
         
 class FollowBack(threading.Thread):
@@ -63,10 +100,12 @@ class FollowBack(threading.Thread):
             except:
                 pass
             
+            # Sleeps for 10 minutes
             time.sleep(float(600))
 
 # Install plugins by making a variable of the class and putting it in the plugins array
-# FIXME fix this ugly hack      
+# FIXME fix this ugly hack    
+XMLT = XMLTweeter  
 UpTweeter = UptimeTweeter
 FollowBk = FollowBack
-plugins = [UpTweeter, FollowBk]
+plugins = [XMLT]
