@@ -37,7 +37,8 @@ class XMLTweeter(threading.Thread):
             soup = BeautifulStoneSoup(feed, fromEncoding='utf-8')
             titles = soup.findAll('title')
             links = soup.findAll('link')
-            title = titles[1].contents[0].string.encode('utf-8')
+            #FIXME throws an unicode exception for strings with weird characters
+            title = titles[1].contents[0].string
             link = links[1].contents[0].string
             status = str(title) + ' ' + str(link)
             #FIXME don't ruin twitter by spamming requests
