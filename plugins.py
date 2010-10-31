@@ -37,18 +37,18 @@ class XMLTweeter(threading.Thread):
             soup = BeautifulStoneSoup(feed, fromEncoding='utf-8')
             titles = soup.findAll('title')
             links = soup.findAll('link')
-            title = titles[1].contents[0].string
+            title = titles[1].contents[0].string.encode('utf-8')
             link = links[1].contents[0].string
             status = str(title) + ' ' + str(link)
-            #FIXME don't ruin twitter
+            #FIXME don't ruin twitter by spamming requests
             try:
                 self.twitter.UpdateStatus(status)
                 print '[*] Tweeted the post: ' + title
             except:
                 pass
             
-            # Sleeps for 5 minutes
-            time.sleep(float(300))
+            # Sleeps for 3 minutes
+            time.sleep(float(180))
 
 class UptimeTweeter(threading.Thread):
     '''
@@ -82,11 +82,12 @@ class FollowBack(threading.Thread):
         
     def run(self):
         while True:
-            print '[*] Trying to follow your followers...'
             try:
                 friends = self.twitter.GetFriendsIds()
                 followers = self.twitter.GetFollowersIds()
                 tofollow = list(set(followers) - set(friends))
+                if tofollow:
+                    print '[*] Trying to follow your followers...'
             except:
                 print '[*] Unable to get follow lists...'
                 
@@ -104,8 +105,8 @@ class FollowBack(threading.Thread):
             time.sleep(float(600))
 
 # Install plugins by making a variable of the class and putting it in the plugins array
-# FIXME fix this ugly hack    
+# FIXME fix this ugly hack   
 XMLT = XMLTweeter  
 UpTweeter = UptimeTweeter
 FollowBk = FollowBack
-plugins = [XMLT]
+plugins = [XMLT, FollowBk]
