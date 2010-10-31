@@ -33,14 +33,17 @@ class XMLTweeter(threading.Thread):
         title = ''
         while True:
             url = 'http://mac1.no/node/feed'
-            feed = urllib2.urlopen(url)
-            soup = BeautifulStoneSoup(feed, fromEncoding='utf-8')
-            titles = soup.findAll('title')
-            links = soup.findAll('link')
-            #FIXME throws an unicode exception for strings with weird characters
-            title = titles[1].contents[0].string
-            link = links[1].contents[0].string
-            status = str(title) + ' ' + str(link)
+            try:
+                feed = urllib2.urlopen(url)
+                soup = BeautifulStoneSoup(feed, fromEncoding='utf-8')
+                titles = soup.findAll('title')
+                links = soup.findAll('link')
+                #FIXME throws an unicode exception for strings with wierd characters
+                title = titles[1].contents[0].string
+                link = links[1].contents[0].string
+                status = str(title) + ' ' + str(link)
+            except:
+                print '[*] Unable to fetch from feed.'
             #FIXME don't ruin twitter by spamming requests
             try:
                 self.twitter.UpdateStatus(status)
@@ -87,8 +90,9 @@ class FollowBack(threading.Thread):
                 friends = self.twitter.GetFriendsIds()
                 followers = self.twitter.GetFollowersIds()
                 tofollow = list(set(followers) - set(friends))
-                if tofollow:
-                    print '[*] Trying to follow your followers...'
+                #FIXME this does not work as expected, prints every 10 minutes..
+                #if tofollow:
+                #    print '[*] Trying to follow your followers...'
             except:
                 print '[*] Unable to get follow lists...'
                 
